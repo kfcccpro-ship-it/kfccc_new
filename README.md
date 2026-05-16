@@ -1,31 +1,15 @@
-# 새마을금고중앙회 신입직원 강의 HTML
+# 새마을금고법 확인문제 인쇄용 패키지 - GitHub Pages용
 
-GitHub Pages 배포용 정적 HTML 패키지입니다.
+GitHub Pages에 업로드하면 웹에서 바로 문제지와 정답·해설을 열고 인쇄할 수 있습니다.
 
-## 파일 구성
+## 배포 방법
+1. 이 폴더의 파일을 GitHub 저장소 루트에 업로드합니다.
+2. Settings > Pages > Deploy from a branch를 선택합니다.
+3. Branch는 `main`, folder는 `/root`로 지정합니다.
+4. 배포 주소에서 `index.html`을 열면 인쇄 메뉴가 표시됩니다.
 
-- `index.html` : 발표용 HTML 메인 파일
-- `.nojekyll` : GitHub Pages에서 정적 파일을 그대로 제공하기 위한 설정 파일
-
-## GitHub Pages 배포 방법
-
-1. GitHub에서 새 저장소를 생성합니다.
-2. 이 폴더의 파일을 저장소 루트에 업로드합니다.
-3. 저장소의 **Settings > Pages**로 이동합니다.
-4. **Build and deployment**에서 Source를 **Deploy from a branch**로 선택합니다.
-5. Branch를 `main`, Folder를 `/root`로 선택한 뒤 Save를 누릅니다.
-6. 잠시 후 표시되는 GitHub Pages 주소로 접속합니다.
-
-## 발표 사용법
-
-- 브라우저에서 GitHub Pages 주소를 엽니다.
-- `F11`로 전체화면 전환 후 발표합니다.
-- 다음: `Space`, `Enter`, `PageDown`, 오른쪽 방향키
-- 이전: `Backspace`, `PageUp`, 왼쪽 방향키
-- 우측 입력창에서 원하는 슬라이드 번호로 바로 이동할 수 있습니다.
-
-## 권장 환경
-
-- Chrome 또는 Edge 최신 버전
-- 발표 전 노트북 해상도와 빔프로젝터 화면비를 16:9로 설정 권장
-- 인터넷 연결이 불안정한 장소에서는 `index.html`을 로컬로 열어 사용하는 것도 가능합니다.
+## 주요 파일
+- `index.html`
+- `questions_print.html`
+- `answers_print.html`
+- `.nojekyll`
