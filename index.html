@@ -163,6 +163,156 @@ body.print-mode .doc-code{display:block;position:absolute;right:18px;bottom:10px
 body.print-mode [data-step]{display:block!important;opacity:1!important;transform:none!important;filter:none!important;}
 body.print-mode tr[data-step]{display:table-row!important;}
 body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-panel{display:flex!important;}
+
+/* ===== MZ UPGRADE: quiz-key highlight + enhanced animations ===== */
+
+/* 1) 빈칸 키워드 하이라이트 */
+.quiz-key {
+  display: inline-block;
+  position: relative;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FFA94D 100%);
+  background-size: 200% 200%;
+  color: #fff !important;
+  padding: 2px 10px 3px;
+  border-radius: 8px;
+  font-weight: 950 !important;
+  letter-spacing: -.02em;
+  animation: qkPulse 2.4s ease-in-out infinite, qkGlow 2.4s ease-in-out infinite;
+  box-shadow: 0 4px 18px rgba(255, 107, 107, .45), inset 0 1px 0 rgba(255,255,255,.25);
+  cursor: default;
+  -webkit-text-stroke: 0;
+}
+.quiz-key::before {
+  content: '📝';
+  font-size: .7em;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+.quiz-key:hover {
+  transform: scale(1.08) rotate(-1deg);
+  box-shadow: 0 8px 30px rgba(255,107,107,.65);
+}
+@keyframes qkPulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.04); }
+}
+@keyframes qkGlow {
+  0%, 100% { box-shadow: 0 4px 18px rgba(255,107,107,.45); }
+  50%       { box-shadow: 0 6px 28px rgba(255,107,107,.75), 0 0 0 3px rgba(255,107,107,.18); }
+}
+
+/* 2) 테이블 셀 안 quiz-key */
+td .quiz-key { font-size: .92em; padding: 1px 8px 2px; }
+
+/* 3) 강화된 stepIn (스프링 물리) */
+@keyframes stepIn {
+  0%   { opacity:0; transform:translateY(20px) scale(.96); filter:blur(4px); }
+  60%  { opacity:1; transform:translateY(-4px) scale(1.01); filter:blur(0); }
+  80%  { transform:translateY(2px) scale(.995); }
+  100% { opacity:1; transform:none; filter:none; }
+}
+[data-step].shown { animation: stepIn .48s cubic-bezier(.22,1,.36,1) both !important; }
+
+/* 4) 슬라이드 스테이지 전환 */
+.slide.active .stage {
+  animation: stageMZ .44s cubic-bezier(.22,1,.36,1) both !important;
+}
+@keyframes stageMZ {
+  from { opacity:0; transform: translateY(28px) scale(.98); filter: blur(6px); }
+  to   { opacity:1; transform: none; filter: none; }
+}
+
+/* 5) 파티클 배경 오브 */
+.canvas::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background:
+    radial-gradient(circle at 92% 8%,  rgba(0,82,255,.07) 0%, transparent 28%),
+    radial-gradient(circle at 4%  88%, rgba(0,163,255,.06) 0%, transparent 26%);
+  animation: orbDrift 12s ease-in-out infinite alternate;
+}
+@keyframes orbDrift {
+  from { opacity:.6; transform: translate(0,0); }
+  to   { opacity:1;  transform: translate(-12px, 10px); }
+}
+
+/* 6) 리스트 아이템 stagger */
+.slide-content ul li { transition: opacity .2s, transform .2s; }
+[data-step].shown > li:nth-child(1) { animation-delay: .00s; }
+[data-step].shown > li:nth-child(2) { animation-delay: .06s; }
+[data-step].shown > li:nth-child(3) { animation-delay: .12s; }
+[data-step].shown > li:nth-child(4) { animation-delay: .18s; }
+[data-step].shown > li:nth-child(5) { animation-delay: .24s; }
+
+/* 7) 테이블 hover lift */
+.table-card { transition: transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s ease !important; }
+.table-card:hover { transform: translateY(-4px) scale(1.005); box-shadow: 0 28px 70px rgba(0,82,255,.18) !important; }
+tr { transition: background .18s; }
+tbody tr:hover td { background: rgba(0,82,255,.06) !important; }
+
+/* 8) subhead 글로우 */
+.subhead { transition: box-shadow .2s, transform .2s; }
+.subhead:hover { box-shadow: 0 8px 28px rgba(0,82,255,.18); transform: translateX(4px); }
+.law-head:hover { box-shadow: 0 8px 28px rgba(0,82,255,.22); }
+.check-head:hover { box-shadow: 0 8px 28px rgba(0,168,120,.20); }
+.case-head:hover { box-shadow: 0 8px 28px rgba(225,25,0,.20); }
+
+/* 9) 파트 배지 shimmer */
+.part-badge {
+  background-size: 200% 100% !important;
+  animation: badgeShimmer 3s linear infinite !important;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary2) 40%, var(--primary) 80%) !important;
+}
+@keyframes badgeShimmer {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* 10) 섹션 구분 화면 강화 */
+.section .canvas {
+  background: radial-gradient(circle at 20% 40%, rgba(255,255,255,.22), transparent 22%),
+              radial-gradient(circle at 82% 22%, rgba(0,163,255,.32), transparent 28%),
+              linear-gradient(140deg, #06112E 0%, #082B76 50%, #0052FF 100%) !important;
+  animation: sectionBg 8s ease-in-out infinite alternate;
+}
+@keyframes sectionBg {
+  from { filter: brightness(1)   hue-rotate(0deg);   }
+  to   { filter: brightness(1.06) hue-rotate(8deg); }
+}
+
+/* 11) 제목 wave-in 강화 */
+.w {
+  animation: waveInMZ .72s cubic-bezier(.22,1,.36,1) both !important;
+  animation-delay: calc(var(--i) * 22ms) !important;
+}
+@keyframes waveInMZ {
+  from { opacity:0; transform: translateY(18px) rotate(-3deg) scale(.92); filter: blur(3px); }
+  to   { opacity:1; transform: none; filter: none; }
+}
+
+/* 12) 페이지 전환 ripple effect */
+.slide { transition: opacity .18s; }
+
+/* 13) 네비게이션 개선 */
+.nb { transition: transform .18s, background .18s !important; }
+.nb:hover { transform: scale(1.12) !important; background: rgba(0,82,255,.4) !important; }
+
+/* 인쇄 시 quiz-key 유지 */
+@media print {
+  .quiz-key {
+    background: #FF6B6B !important;
+    color: #fff !important;
+    animation: none !important;
+    box-shadow: none !important;
+    padding: 1px 6px !important;
+    border-radius: 5px !important;
+  }
+  .quiz-key::before { display: none; }
+}
+
 </style></head>
 <body class="home"><div class="progress" id="progress"></div><div class="nav-title" id="navTitle"></div><div class="tools"><button onclick="toggleOverview()">전체보기 O</button><button onclick="togglePrintMode()">인쇄 P</button><button onclick="setTheme('toss')">토스 T</button><button onclick="setTheme('kakao')">카카오 K</button><button onclick="toggleSpotlight()">스포트라이트 S</button></div><div class="nav"><button class="nb" onclick="prev()">‹</button><div class="cnt" id="count"></div><button class="nb" onclick="next()">›</button><div class="jump-box"><input aria-label="슬라이드 번호" id="slideJump" min="1" placeholder="번호" type="number"/><button class="jump-btn" onclick="jumpToSlide()">이동</button></div></div>
 <div id="spotlight"></div>
@@ -191,7 +341,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <h1 class="slide-title wave-title" data-step="" data-step-level="0"><span class="w" style="--i:0">강</span><span class="w" style="--i:1">의</span><span class="w" style="--i:2">의</span><span class="w" style="--i:3"> </span><span class="w" style="--i:4">출</span><span class="w" style="--i:5">발</span><span class="w" style="--i:6">점</span></h1>
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
 <ul class="reveal" data-step="" data-step-level="2">
-<li>새마을금고법은 금고와 중앙회의 조직·사업·운영을 이해하는 기본 법이다.</li>
+<li>새마을금고법은 금고와 중앙회의 조직·사업·운영을 이해하는 <mark class="quiz-key">기본 법</mark>이다.</li>
 <li>신입직원은 조문을 바로 암기하기보다, 법이 어떤 구조로 금고와 중앙회를 규율하는지 먼저 이해해야 한다.</li>
 <li>해설은 임직원의 법 이해를 돕기 위해 만들어진 자료이므로, 강의의 설명 기준으로 삼는다.</li>
 </ul>
@@ -199,9 +349,9 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>구분</th><th>역할</th><th>강의에서의 활용</th></tr></thead>
 <tbody>
-<tr><td>법</td><td>기본 원칙과 권리·의무 규정</td><td>각 주제의 출발점</td></tr>
+<tr><td>법</td><td><mark class="quiz-key">기본 원칙</mark>과 권리·의무 규정</td><td>각 주제의 출발점</td></tr>
 <tr><td>시행령</td><td>법에서 위임한 세부 절차·기준 규정</td><td>조문 적용 방법 확인</td></tr>
-<tr><td>해설</td><td>조문의 의미와 실무 맥락 설명</td><td>강의 설명의 중심</td></tr>
+<tr><td>해설</td><td>조문의 의미와 <mark class="quiz-key">실무 맥락</mark> 설명</td><td>강의 설명의 중심</td></tr>
 </tbody></table></div>
 <h3 class="subhead check-head reveal" data-step="" data-step-level="1">3. 체크</h3>
 <ul class="reveal" data-step="" data-step-level="4">
@@ -220,18 +370,18 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
 <ul class="reveal" data-step="" data-step-level="2">
 <li>새마을금고법의 목적은 단순히 금융기관을 운영하기 위한 것이 아니다.</li>
-<li>핵심은 국민의 자주적인 협동조직, 상부상조 정신, 자금의 조성과 이용, 회원의 지위 향상, 지역사회 개발이다.</li>
+<li>핵심은 국민의 자주적인 협동조직, <mark class="quiz-key">상부상조</mark> 정신, 자금의 조성과 이용, 회원의 지위 향상, 지역사회 개발이다.</li>
 <li>따라서 새마을금고를 이해할 때는 “금융기관”이라는 관점과 “협동조직”이라는 관점을 함께 보아야 한다.</li>
 </ul>
 <h3 class="subhead law-head reveal" data-step="" data-step-level="1">2. 요약</h3>
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>구분</th><th>법</th><th>시행령</th><th>핵심 의미</th></tr></thead>
 <tbody>
-<tr><td>목적</td><td>법 제1조</td><td>직접 위임 없음</td><td>상부상조 정신에 기초한 협동조직과 지역사회 개발</td></tr>
+<tr><td>목적</td><td>법 제1조</td><td>직접 위임 없음</td><td><mark class="quiz-key">상부상조</mark> 정신에 기초한 협동조직과 지역사회 개발</td></tr>
 </tbody></table></div>
 <h3 class="subhead check-head reveal" data-step="" data-step-level="1">3. 체크</h3>
 <ul class="reveal" data-step="" data-step-level="4">
-<li>새마을금고는 이윤 극대화만을 목적으로 하는 회사가 아니다.</li>
+<li>새마을금고는 <mark class="quiz-key">이윤 극대화</mark>만을 목적으로 하는 회사가 아니다.</li>
 <li>회원의 경제적·사회적·문화적 지위 향상이라는 목적을 항상 함께 고려해야 한다.</li>
 </ul></div></div>
 <div class="doc-code">문서코드: MG-LAW-LECTURE-2026-INTRA-GH</div></div>
@@ -252,14 +402,14 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>구분</th><th>법</th><th>시행령</th><th>핵심 의미</th></tr></thead>
 <tbody>
-<tr><td>금고의 정의</td><td>법 제2조 제1항</td><td>시행령 제2조~제4조</td><td>법에 따라 설립된 비영리법인</td></tr>
-<tr><td>설립절차</td><td>법 제7조</td><td>시행령 제2조~제3조</td><td>창립총회, 설립인가, 설립등기 필요</td></tr>
+<tr><td>금고의 정의</td><td>법 제2조 제1항</td><td>시행령 제2조~제4조</td><td>법에 따라 설립된 <mark class="quiz-key">비영리법인</mark></td></tr>
+<tr><td>설립절차</td><td>법 제7조</td><td>시행령 제2조~제3조</td><td><mark class="quiz-key">창립총회</mark>, 설립인가, 설립등기 필요</td></tr>
 <tr><td>인가요건</td><td>법 제7조의2</td><td>시행령 제4조</td><td>출자금, 인력, 물적 시설, 사업계획 등 필요</td></tr>
 </tbody></table></div>
 <h3 class="subhead check-head reveal" data-step="" data-step-level="1">3. 체크</h3>
 <ul class="reveal" data-step="" data-step-level="4">
 <li>금고는 자연인도 아니고 단순한 모임도 아니다.</li>
-<li>금고는 법률상 독립된 권리·의무의 주체이다.</li>
+<li>금고는 법률상 독립된 <mark class="quiz-key">권리·의무의 주체</mark>이다.</li>
 </ul></div></div>
 <div class="doc-code">문서코드: MG-LAW-LECTURE-2026-INTRA-GH</div></div>
 </section>
@@ -271,7 +421,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <h1 class="slide-title wave-title" data-step="" data-step-level="0"><span class="w" style="--i:0">중</span><span class="w" style="--i:1">앙</span><span class="w" style="--i:2">회</span><span class="w" style="--i:3">란</span><span class="w" style="--i:4"> </span><span class="w" style="--i:5">무</span><span class="w" style="--i:6">엇</span><span class="w" style="--i:7">인</span><span class="w" style="--i:8">가</span></h1>
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
 <ul class="reveal" data-step="" data-step-level="2">
-<li>중앙회는 모든 금고의 공동이익 증진과 지속적인 발전을 도모하기 위해 설립된 비영리법인이다.</li>
+<li>중앙회는 모든 금고의 <mark class="quiz-key">공동이익</mark> 증진과 지속적인 발전을 도모하기 위해 설립된 비영리법인이다.</li>
 <li>중앙회는 개별 금고와 별개의 법인이다.</li>
 <li>중앙회는 금고의 계통조직에서 지도·지원·감독 기능을 수행한다.</li>
 </ul>
@@ -279,12 +429,12 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>구분</th><th>법</th><th>시행령</th><th>핵심 의미</th></tr></thead>
 <tbody>
-<tr><td>중앙회의 정의</td><td>법 제2조 제3항</td><td>중앙회 설립절차: 시행령 제22조~제23조</td><td>금고의 공동이익과 발전을 위한 비영리법인</td></tr>
+<tr><td>중앙회의 정의</td><td>법 제2조 제3항</td><td>중앙회 설립절차: 시행령 제22조~제23조</td><td>금고의 공동이익과 발전을 위한 <mark class="quiz-key">비영리법인</mark></td></tr>
 <tr><td>명칭</td><td>법 제2조 제4항·제5항</td><td>직접 위임 없음</td><td>새마을금고중앙회 명칭 사용 및 보호</td></tr>
 </tbody></table></div>
 <h3 class="subhead check-head reveal" data-step="" data-step-level="1">3. 체크</h3>
 <ul class="reveal" data-step="" data-step-level="4">
-<li>금고는 회원을 기초로 한 조직이고, 중앙회는 금고를 구성원으로 하는 계통조직이다.</li>
+<li>금고는 회원을 기초로 한 조직이고, 중앙회는 금고를 구성원으로 하는 <mark class="quiz-key">계통조직</mark>이다.</li>
 <li>중앙회는 단순한 본점이 아니라 별도의 법인이다.</li>
 </ul></div></div>
 <div class="doc-code">문서코드: MG-LAW-LECTURE-2026-INTRA-GH</div></div>
@@ -298,16 +448,16 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
 <ul class="reveal" data-step="" data-step-level="2">
 <li>법령을 처음 접하는 신입직원은 조문 하나하나를 독립적으로 외우기 쉽다.</li>
-<li>그러나 법은 체계적으로 연결되어 있다.</li>
+<li>그러나 법은 <mark class="quiz-key">체계적</mark>으로 연결되어 있다.</li>
 <li>법, 시행령, 시행규칙, 정관, 규정의 순서를 이해해야 실무 판단이 가능하다.</li>
 </ul>
 <h3 class="subhead law-head reveal" data-step="" data-step-level="1">2. 요약</h3>
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>순서</th><th>자료</th><th>읽는 목적</th></tr></thead>
 <tbody>
-<tr><td>1</td><td>법</td><td>기본 원칙 확인</td></tr>
+<tr><td>1</td><td>법</td><td><mark class="quiz-key">기본 원칙</mark> 확인</td></tr>
 <tr><td>2</td><td>시행령</td><td>절차·기준 확인</td></tr>
-<tr><td>3</td><td>해설</td><td>의미와 실무 맥락 이해</td></tr>
+<tr><td>3</td><td>해설</td><td>의미와 <mark class="quiz-key">실무 맥락</mark> 이해</td></tr>
 <tr><td>4</td><td>정관·규정</td><td>실제 업무 적용</td></tr>
 </tbody></table></div>
 <h3 class="subhead check-head reveal" data-step="" data-step-level="1">3. 체크</h3>
@@ -326,7 +476,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
 <ul class="reveal" data-step="" data-step-level="2">
 <li>형식적 의의의 금고법은 “새마을금고법”이라는 이름을 가진 법률 자체를 말한다.</li>
-<li>국회의 의결을 거쳐 제정된 성문 법률이다.</li>
+<li>국회의 의결을 거쳐 제정된 <mark class="quiz-key">성문 법률</mark>이다.</li>
 <li>실제 강의에서는 법 조문 자체를 말할 때 주로 이 의미로 사용한다.</li>
 </ul>
 <h3 class="subhead law-head reveal" data-step="" data-step-level="1">2. 요약</h3>
@@ -334,7 +484,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <thead><tr><th>구분</th><th>내용</th></tr></thead>
 <tbody>
 <tr><td>의미</td><td>「새마을금고법」이라는 명칭의 법률</td></tr>
-<tr><td>성격</td><td>국회가 제정한 성문법</td></tr>
+<tr><td>성격</td><td>국회가 제정한 <mark class="quiz-key">성문법</mark></td></tr>
 <tr><td>역할</td><td>금고와 중앙회의 기본 법률</td></tr>
 <tr><td>한계</td><td>실무와 관련된 모든 규범을 전부 포함하지는 않음</td></tr>
 </tbody></table></div>
@@ -519,15 +669,15 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
 <ul class="reveal" data-step="" data-step-level="2">
 <li>새마을금고는 협동조직이다.</li>
-<li>협동조합은 경제적 약자들이 공동의 이익을 위해 자발적으로 조직한 인적 결합체로 이해할 수 있다.</li>
+<li>협동조합은 경제적 약자들이 공동의 이익을 위해 자발적으로 조직한 <mark class="quiz-key">인적 결합체</mark>로 이해할 수 있다.</li>
 <li>새마을금고법에는 협동조합의 기본원칙이 여러 조문에 반영되어 있다.</li>
 </ul>
 <h3 class="subhead law-head reveal" data-step="" data-step-level="1">2. 요약</h3>
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>원칙</th><th>금고법상 의미</th></tr></thead>
 <tbody>
-<tr><td>가입 자유</td><td>자격 있는 사람의 가입 거절 금지</td></tr>
-<tr><td>민주적 관리</td><td>출자좌수와 무관한 평등한 의결권</td></tr>
+<tr><td><mark class="quiz-key">가입 자유</mark></td><td>자격 있는 사람의 가입 거절 금지</td></tr>
+<tr><td>민주적 관리</td><td>출자좌수와 무관한 <mark class="quiz-key">평등한 의결권</mark></td></tr>
 <tr><td>경제적 참여</td><td>출자와 사업 이용</td></tr>
 <tr><td>자율과 독립</td><td>회원 중심의 자치적 운영</td></tr>
 <tr><td>교육 및 홍보</td><td>회원·임직원 교육 필요</td></tr>
@@ -549,7 +699,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
 <ul class="reveal" data-step="" data-step-level="2">
 <li>금고는 단순한 금융 영업조직이 아니다.</li>
-<li>법적으로는 법인, 사단법인, 사법인, 비영리법인, 특수법인의 성격을 가진다.</li>
+<li>법적으로는 법인, <mark class="quiz-key">사단법인</mark>, 사법인, 비영리법인, 특수법인의 성격을 가진다.</li>
 <li>이 성격을 이해해야 회원, 기관, 임원, 감독 규정을 체계적으로 이해할 수 있다.</li>
 </ul>
 <h3 class="subhead law-head reveal" data-step="" data-step-level="1">2. 요약</h3>
@@ -559,7 +709,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <tr><td>법인</td><td>권리·의무의 주체</td></tr>
 <tr><td>사단법인</td><td>사람의 결합체</td></tr>
 <tr><td>사법인</td><td>회원의 자유의사와 자치에 기초</td></tr>
-<tr><td>비영리법인</td><td>이윤배당 목적 아님</td></tr>
+<tr><td>비영리법인</td><td><mark class="quiz-key">이윤배당</mark> 목적 아님</td></tr>
 <tr><td>특수법인</td><td>특별법인 새마을금고법에 의해 설립</td></tr>
 </tbody></table></div>
 <h3 class="subhead check-head reveal" data-step="" data-step-level="1">3. 체크</h3>
@@ -576,7 +726,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <h1 class="slide-title wave-title" data-step="" data-step-level="0"><span class="w" style="--i:0">법</span><span class="w" style="--i:1">인</span><span class="w" style="--i:2">이</span><span class="w" style="--i:3">라</span><span class="w" style="--i:4">는</span><span class="w" style="--i:5"> </span><span class="w" style="--i:6">의</span><span class="w" style="--i:7">미</span></h1>
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
 <ul class="reveal" data-step="" data-step-level="2">
-<li>법인은 자연인은 아니지만 법률에 따라 권리와 의무의 주체가 될 수 있는 단체이다.</li>
+<li>법인은 자연인은 아니지만 법률에 따라 <mark class="quiz-key">권리와 의무의 주체</mark>가 될 수 있는 단체이다.</li>
 <li>금고가 법인이라는 말은 금고 명의로 계약하고, 재산을 보유하고, 소송을 할 수 있다는 뜻이다.</li>
 <li>회원 개인과 금고는 법적으로 구분된다.</li>
 </ul>
@@ -612,7 +762,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <thead><tr><th>효과</th><th>의미</th></tr></thead>
 <tbody>
 <tr><td>독립성</td><td>금고 명의로 법률행위 가능</td></tr>
-<tr><td>책임 분리</td><td>회원 책임은 출자액 한도</td></tr>
+<tr><td>책임 분리</td><td>회원 책임은 <mark class="quiz-key">출자액 한도</mark></td></tr>
 <tr><td>지속성</td><td>회원 변동에도 조직 계속 가능</td></tr>
 <tr><td>거래 안정성</td><td>외부 거래 상대방과의 법률관계 명확화</td></tr>
 </tbody></table></div>
@@ -725,7 +875,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
 <ul class="reveal" data-step="" data-step-level="2">
 <li>새마을금고는 협동조합적 성격을 가지지만 민법상 조합과는 다르다.</li>
-<li>민법상 조합은 계약관계이고 법인격이 없다.</li>
+<li>민법상 조합은 계약관계이고 <mark class="quiz-key">법인격</mark>이 없다.</li>
 <li>금고는 새마을금고법에 따라 설립된 법인이다.</li>
 </ul>
 <h3 class="subhead reveal" data-step="" data-step-level="1">2. 요약</h3>
@@ -761,7 +911,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <tbody>
 <tr><td>성질상 제한</td><td>자연인만 가능한 권리는 가질 수 없음</td><td>생명권, 친권 등</td></tr>
 <tr><td>법률상 제한</td><td>법령이 금지한 행위 불가</td><td>법상 제한된 사업</td></tr>
-<tr><td>목적상 제한</td><td>정관 목적 범위 내 활동</td><td>목적 외 사업 제한</td></tr>
+<tr><td>목적상 제한</td><td><mark class="quiz-key">정관 목적</mark> 범위 내 활동</td><td>목적 외 사업 제한</td></tr>
 </tbody></table></div>
 <h3 class="subhead check-head reveal" data-step="" data-step-level="1">3. 체크</h3>
 <ul class="reveal" data-step="" data-step-level="4">
@@ -778,7 +928,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
 <ul class="reveal" data-step="" data-step-level="2">
 <li>법인인 금고는 스스로 물리적으로 행동할 수 없다.</li>
-<li>이사장 등 대표기관을 통해 법률행위를 한다.</li>
+<li><mark class="quiz-key">이사장</mark> 등 대표기관을 통해 법률행위를 한다.</li>
 <li>권한 있는 대표기관의 행위는 금고의 행위로 인정된다.</li>
 </ul>
 <h3 class="subhead law-head reveal" data-step="" data-step-level="1">2. 요약</h3>
@@ -806,7 +956,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <ul class="reveal" data-step="" data-step-level="2">
 <li>법인도 불법행위책임을 질 수 있다.</li>
 <li>대표기관이 직무와 관련하여 타인에게 손해를 끼치면 금고의 책임이 문제될 수 있다.</li>
-<li>직원의 행위는 금고의 사용자책임으로 연결될 수 있다.</li>
+<li>직원의 행위는 금고의 <mark class="quiz-key">사용자책임</mark>으로 연결될 수 있다.</li>
 </ul>
 <h3 class="subhead law-head reveal" data-step="" data-step-level="1">2. 요약</h3>
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
@@ -843,7 +993,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 </tbody></table></div>
 <h3 class="subhead check-head reveal" data-step="" data-step-level="1">3. 체크</h3>
 <ul class="reveal" data-step="" data-step-level="4">
-<li>명칭은 단순한 브랜드가 아니라 법적으로 보호되는 표시이다.</li>
+<li>명칭은 단순한 브랜드가 아니라 법적으로 보호되는 <mark class="quiz-key">표시</mark>이다.</li>
 </ul></div></div>
 <div class="doc-code">문서코드: MG-LAW-LECTURE-2026-INTRA-GH</div></div>
 </section>
@@ -869,7 +1019,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 </tbody></table></div>
 <h3 class="subhead check-head reveal" data-step="" data-step-level="1">3. 체크</h3>
 <ul class="reveal" data-step="" data-step-level="4">
-<li>업무구역은 회원 자격 판단의 출발점이다.</li>
+<li><mark class="quiz-key">업무구역</mark>은 회원 자격 판단의 출발점이다.</li>
 </ul></div></div>
 <div class="doc-code">문서코드: MG-LAW-LECTURE-2026-INTRA-GH</div></div>
 </section>
@@ -1396,7 +1546,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="slide-top reveal" data-step="" data-step-level="0"><span class="part-badge">제2부</span><span class="slide-index"></span></div>
 <h1 class="slide-title wave-title" data-step="" data-step-level="0"><span class="w" style="--i:0">탈</span><span class="w" style="--i:1">퇴</span><span class="w" style="--i:2">·</span><span class="w" style="--i:3">제</span><span class="w" style="--i:4">명</span><span class="w" style="--i:5"> </span><span class="w" style="--i:6">후</span><span class="w" style="--i:7"> </span><span class="w" style="--i:8">환</span><span class="w" style="--i:9">급</span><span class="w" style="--i:10">청</span><span class="w" style="--i:11">구</span><span class="w" style="--i:12">권</span></h1>
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
-<p class="reveal" data-step="" data-step-level="2">탈퇴 또는 제명된 회원은 회원 지위를 상실하지만, 출자금과 예탁금·적금의 환급청구권이 문제된다.<br/>예탁금·적금은 정관에 따라 환급을 청구할 수 있고, 출자금은 탈퇴 당시 회계연도 다음 회계연도부터 청구할 수 있다.</p>
+<p class="reveal" data-step="" data-step-level="2">탈퇴 또는 제명된 회원은 회원 지위를 상실하지만, 출자금과 예탁금·적금의 환급청구권이 문제된다.<br/>예탁금·적금은 정관에 따라 환급을 청구할 수 있고, 출자금은 탈퇴 당시 <mark class="quiz-key">회계연도 다음 회계연도</mark>부터 청구할 수 있다.</p>
 <h3 class="subhead law-head reveal" data-step="" data-step-level="1">2. 요약</h3>
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>구분</th><th>법 제10조</th><th>핵심 내용</th></tr></thead>
@@ -1404,7 +1554,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <tr><td>예탁금·적금 환급</td><td>제4항</td><td>정관에 따라 환급청구 가능</td></tr>
 <tr><td>출자금 환급</td><td>제5항</td><td>탈퇴 당시 회계연도 다음 회계연도부터 청구 가능</td></tr>
 <tr><td>손실액 공제</td><td>제6항</td><td>재산으로 채무를 다 갚을 수 없으면 손실액 공제 가능</td></tr>
-<tr><td>소멸시효</td><td>제7항</td><td>출자금 2년, 예탁금·적금 5년</td></tr>
+<tr><td>소멸시효</td><td>제7항</td><td><mark class="quiz-key">출자금 2년</mark>, 예탁금·적금 5년</td></tr>
 </tbody></table></div>
 <h3 class="subhead check-head reveal" data-step="" data-step-level="1">3. 체크</h3>
 <ul class="reveal" data-step="" data-step-level="4">
@@ -1437,7 +1587,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>구분</th><th>법 조문</th><th>핵심 내용</th></tr></thead>
 <tbody>
-<tr><td>우선변제권</td><td>법 제11조</td><td>회원 채무 불이행 시 출자금·예탁금·적금에서 우선변제</td></tr>
+<tr><td>우선변제권</td><td>법 제11조</td><td>회원 채무 불이행 시 출자금·예탁금·적금에서 <mark class="quiz-key">우선변제</mark></td></tr>
 <tr><td>실무 연결</td><td>민법상 상계 등</td><td>절차와 방법은 법률관계에 따라 검토 필요</td></tr>
 <tr><td>관리 포인트</td><td>채권관리</td><td>채무·예적금·출자금 현황 확인 필요</td></tr>
 </tbody></table></div>
@@ -1460,8 +1610,8 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>구분</th><th>의미</th><th>예시</th></tr></thead>
 <tbody>
-<tr><td>자익권</td><td>회원 개인의 경제적 이익 목적</td><td>사업이용권, 배당청구권, 출자금환급청구권</td></tr>
-<tr><td>공익권</td><td>금고 경영·관리에 참여</td><td>의결권, 선거권, 열람권, 총회소집요구권</td></tr>
+<tr><td><mark class="quiz-key">자익권</mark></td><td>회원 개인의 경제적 이익 목적</td><td>사업이용권, <mark class="quiz-key">배당청구권</mark>, 출자금환급청구권</td></tr>
+<tr><td><mark class="quiz-key">공익권</mark></td><td>금고 경영·관리에 참여</td><td><mark class="quiz-key">의결권</mark>, 선거권, 열람권, 총회소집요구권</td></tr>
 <tr><td>단독회원권</td><td>회원이 단독으로 행사 가능</td><td>의결권, 선거권 등</td></tr>
 <tr><td>소수회원권</td><td>일정 수 이상의 회원이 행사</td><td>총회소집요구권, 검사청구권 등</td></tr>
 </tbody></table></div>
@@ -1508,7 +1658,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>권리</th><th>관련 조문</th><th>핵심 의미</th></tr></thead>
 <tbody>
-<tr><td>총회소집요구권</td><td>법 제14조 제1항</td><td>회원 3분의 1 이상 동의로 임시총회 요구 가능</td></tr>
+<tr><td>총회소집요구권</td><td>법 제14조 제1항</td><td><mark class="quiz-key">회원 3분의 1 이상</mark> 동의로 임시총회 요구 가능</td></tr>
 <tr><td>임원해임요구권</td><td>법 제19조, 시행령 제9조</td><td>일정 요건하에 임원 해임 의결 가능</td></tr>
 <tr><td>검사청구권</td><td>감독 관련 조문</td><td>회원의 감시·통제 기능</td></tr>
 </tbody></table></div>
@@ -1526,7 +1676,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="slide-top reveal" data-step="" data-step-level="0"><span class="part-badge">제2부</span><span class="slide-index"></span></div>
 <h1 class="slide-title wave-title" data-step="" data-step-level="0"><span class="w" style="--i:0">회</span><span class="w" style="--i:1">원</span><span class="w" style="--i:2">의</span><span class="w" style="--i:3"> </span><span class="w" style="--i:4">의</span><span class="w" style="--i:5">무</span><span class="w" style="--i:6">와</span><span class="w" style="--i:7"> </span><span class="w" style="--i:8">책</span><span class="w" style="--i:9">임</span></h1>
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
-<p class="reveal" data-step="" data-step-level="2">회원은 권리만 갖는 것이 아니라 금고 운영질서와 협동조합 목적 달성을 위한 의무를 부담한다.<br/>출자금 납입의무, 손실부담의무, 경비부담의무, 내부질서유지의무 등이 대표적이다.<br/>회원의 책임은 원칙적으로 출자액을 한도로 한다.</p>
+<p class="reveal" data-step="" data-step-level="2">회원은 권리만 갖는 것이 아니라 금고 운영질서와 협동조합 목적 달성을 위한 의무를 부담한다.<br/>출자금 납입의무, 손실부담의무, 경비부담의무, 내부질서유지의무 등이 대표적이다.<br/>회원의 책임은 원칙적으로 <mark class="quiz-key">출자액을 한도</mark>로 한다.</p>
 <h3 class="subhead law-head reveal" data-step="" data-step-level="1">2. 요약</h3>
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>구분</th><th>관련 조문</th><th>핵심 내용</th></tr></thead>
@@ -1574,13 +1724,13 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="slide-top reveal" data-step="" data-step-level="0"><span class="part-badge">제2부</span><span class="slide-index"></span></div>
 <h1 class="slide-title wave-title" data-step="" data-step-level="0"><span class="w" style="--i:0">총</span><span class="w" style="--i:1">회</span><span class="w" style="--i:2">의</span><span class="w" style="--i:3"> </span><span class="w" style="--i:4">의</span><span class="w" style="--i:5">의</span></h1>
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
-<p class="reveal" data-step="" data-step-level="2">총회는 회원으로 구성되는 금고의 최고 의사결정기관이다.<br/>금고의 중요한 사항은 총회의 의결을 거쳐야 하며, 이는 회원이 금고 운영에 직접 참여하는 협동조합 원리를 제도화한 것이다.</p>
+<p class="reveal" data-step="" data-step-level="2">총회는 회원으로 구성되는 금고의 <mark class="quiz-key">최고 의사결정기관</mark>이다.<br/>금고의 중요한 사항은 총회의 의결을 거쳐야 하며, 이는 회원이 금고 운영에 직접 참여하는 협동조합 원리를 제도화한 것이다.</p>
 <h3 class="subhead law-head reveal" data-step="" data-step-level="1">2. 요약</h3>
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>구분</th><th>법 조문</th><th>핵심 내용</th></tr></thead>
 <tbody>
 <tr><td>총회 설치</td><td>법 제12조 제1항</td><td>금고에 총회를 둠</td></tr>
-<tr><td>총회 종류</td><td>법 제12조 제2항</td><td>정기총회와 임시총회</td></tr>
+<tr><td>총회 종류</td><td>법 제12조 제2항</td><td><mark class="quiz-key">정기총회와 임시총회</mark></td></tr>
 <tr><td>구성</td><td>법 제12조 제3항</td><td>총회는 회원으로 구성</td></tr>
 <tr><td>소집권자</td><td>법 제12조 제3항</td><td>원칙적으로 이사장이 소집</td></tr>
 </tbody></table></div>
@@ -1613,7 +1763,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 </tbody></table></div>
 <h3 class="subhead check-head reveal" data-step="" data-step-level="1">3. 체크</h3>
 <ul class="reveal" data-step="" data-step-level="4">
-<li>총회 전속사항은 다른 기관에 임의 위임할 수 없다.</li>
+<li><mark class="quiz-key">총회 전속사항</mark>은 다른 기관에 임의 위임할 수 없다.</li>
 <li>정관 변경은 총회 의결뿐 아니라 인가 문제와도 연결된다.</li>
 </ul></div></div>
 <div class="doc-code">문서코드: MG-LAW-LECTURE-2026-INTRA-GH</div></div>
@@ -2095,7 +2245,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="slide-top reveal" data-step="" data-step-level="0"><span class="part-badge">제3부</span><span class="slide-index"></span></div>
 <h1 class="slide-title wave-title" data-step="" data-step-level="0"><span class="w" style="--i:0">이</span><span class="w" style="--i:1">사</span><span class="w" style="--i:2">회</span><span class="w" style="--i:3"> </span><span class="w" style="--i:4">소</span><span class="w" style="--i:5">집</span><span class="w" style="--i:6">과</span><span class="w" style="--i:7"> </span><span class="w" style="--i:8">운</span><span class="w" style="--i:9">영</span></h1>
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
-<p class="reveal" data-step="" data-step-level="2">이사회는 이사장이 소집한다.<br/>다만, 재적이사 3분의 1 이상이 요구하는 경우 이사장은 지체 없이 이사회를 소집하여야 한다.<br/>이는 이사장이 이사회의 운영을 독점하지 못하도록 하고, 이사회 구성원의 견제 기능을 보장하기 위한 구조이다.</p>
+<p class="reveal" data-step="" data-step-level="2">이사회는 이사장이 소집한다.<br/>다만, <mark class="quiz-key">재적이사 3분의 1 이상</mark>이 요구하는 경우 이사장은 지체 없이 이사회를 소집하여야 한다.<br/>이는 이사장이 이사회의 운영을 독점하지 못하도록 하고, 이사회 구성원의 견제 기능을 보장하기 위한 구조이다.</p>
 <h3 class="subhead law-head reveal" data-step="" data-step-level="1">2. 요약</h3>
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>구분</th><th>법 조문</th><th>핵심 의미</th></tr></thead>
@@ -2119,7 +2269,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="slide-top reveal" data-step="" data-step-level="0"><span class="part-badge">제3부</span><span class="slide-index"></span></div>
 <h1 class="slide-title wave-title" data-step="" data-step-level="0"><span class="w" style="--i:0">임</span><span class="w" style="--i:1">원</span><span class="w" style="--i:2">의</span><span class="w" style="--i:3"> </span><span class="w" style="--i:4">종</span><span class="w" style="--i:5">류</span><span class="w" style="--i:6">와</span><span class="w" style="--i:7"> </span><span class="w" style="--i:8">수</span></h1>
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
-<p class="reveal" data-step="" data-step-level="2">금고의 임원은 이사장, 이사, 감사로 구성된다.<br/>이사장은 금고를 대표하고, 이사는 이사회 구성원으로서 의사결정에 참여하며, 감사는 금고의 재산과 업무집행을 감시한다.</p>
+<p class="reveal" data-step="" data-step-level="2">금고의 임원은 <mark class="quiz-key">이사장, 이사, 감사</mark>로 구성된다.<br/>이사장은 금고를 대표하고, 이사는 이사회 구성원으로서 의사결정에 참여하며, 감사는 금고의 재산과 업무집행을 감시한다.</p>
 <h3 class="subhead law-head reveal" data-step="" data-step-level="1">2. 요약</h3>
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>구분</th><th>법</th><th>시행령</th><th>핵심 의미</th></tr></thead>
@@ -2132,7 +2282,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <h3 class="subhead check-head reveal" data-step="" data-step-level="1">3. 체크</h3>
 <ul class="reveal" data-step="" data-step-level="4">
 <li>이사장은 이사 중 한 명이지만, 대표권과 총괄권을 가진 특수한 지위에 있다.</li>
-<li>감사는 업무집행자가 아니라 감시기관이다.</li>
+<li>감사는 업무집행자가 아니라 <mark class="quiz-key">감시기관</mark>이다.</li>
 </ul></div></div>
 <div class="doc-code">문서코드: MG-LAW-LECTURE-2026-INTRA-GH</div></div>
 </section>
@@ -2143,13 +2293,13 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="slide-top reveal" data-step="" data-step-level="0"><span class="part-badge">제3부</span><span class="slide-index"></span></div>
 <h1 class="slide-title wave-title" data-step="" data-step-level="0"><span class="w" style="--i:0">상</span><span class="w" style="--i:1">근</span><span class="w" style="--i:2">임</span><span class="w" style="--i:3">원</span><span class="w" style="--i:4">의</span><span class="w" style="--i:5"> </span><span class="w" style="--i:6">의</span><span class="w" style="--i:7">미</span></h1>
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
-<p class="reveal" data-step="" data-step-level="2">임원은 원칙적으로 명예직이지만, 일정한 자산 규모와 재무구조 등을 고려하여 상근임원을 둘 수 있다.<br/>상근임원은 금고 운영의 전문성과 책임성을 보완하기 위한 제도이다.</p>
+<p class="reveal" data-step="" data-step-level="2">임원은 원칙적으로 <mark class="quiz-key">명예직</mark>이지만, 일정한 자산 규모와 재무구조 등을 고려하여 상근임원을 둘 수 있다.<br/>상근임원은 금고 운영의 전문성과 책임성을 보완하기 위한 제도이다.</p>
 <h3 class="subhead law-head reveal" data-step="" data-step-level="1">2. 요약</h3>
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>구분</th><th>법</th><th>시행령</th><th>핵심 의미</th></tr></thead>
 <tbody>
 <tr><td>상근임원 가능</td><td>법 제18조 제2항</td><td>시행령 제7조</td><td>자산 규모·경영상태 등에 따라 가능</td></tr>
-<tr><td>상근임원 수</td><td>법 제18조 제2항</td><td>시행령 제7조</td><td>이사 중 2명, 감사 중 1명 한도 등</td></tr>
+<tr><td>상근임원 수</td><td>법 제18조 제2항</td><td>시행령 제7조</td><td><mark class="quiz-key">이사 중 2명</mark>, 감사 중 1명 한도 등</td></tr>
 <tr><td>상근감사 의무</td><td>법 제18조 제3항</td><td>시행령 제8조의2</td><td>일정 기준 이상 지역금고는 상근감사 필요</td></tr>
 </tbody></table></div>
 <h3 class="subhead check-head reveal" data-step="" data-step-level="1">3. 체크</h3>
@@ -2190,12 +2340,12 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="slide-top reveal" data-step="" data-step-level="0"><span class="part-badge">제3부</span><span class="slide-index"></span></div>
 <h1 class="slide-title wave-title" data-step="" data-step-level="0"><span class="w" style="--i:0">이</span><span class="w" style="--i:1">사</span><span class="w" style="--i:2">장</span><span class="w" style="--i:3">의</span><span class="w" style="--i:4"> </span><span class="w" style="--i:5">선</span><span class="w" style="--i:6">출</span></h1>
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
-<p class="reveal" data-step="" data-step-level="2">이사장은 회원 중에서 무기명 비밀투표로 직접 선출하는 것이 원칙이다.<br/>다만 일정 규모 이하 금고 등은 정관이 정하는 방법에 따라 회원 직접투표, 총회 선출, 대의원회 선출 중 선택할 수 있다.</p>
+<p class="reveal" data-step="" data-step-level="2">이사장은 회원 중에서 <mark class="quiz-key">무기명 비밀투표</mark>로 직접 선출하는 것이 원칙이다.<br/>다만 일정 규모 이하 금고 등은 정관이 정하는 방법에 따라 회원 직접투표, 총회 선출, 대의원회 선출 중 선택할 수 있다.</p>
 <h3 class="subhead law-head reveal" data-step="" data-step-level="1">2. 요약</h3>
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>구분</th><th>법</th><th>시행령</th><th>핵심 의미</th></tr></thead>
 <tbody>
-<tr><td>원칙</td><td>법 제18조 제5항</td><td>-</td><td>회원의 무기명 비밀투표로 직접 선출</td></tr>
+<tr><td>원칙</td><td>법 제18조 제5항</td><td>-</td><td>회원의 <mark class="quiz-key">무기명 비밀투표</mark>로 직접 선출</td></tr>
 <tr><td>예외</td><td>법 제18조 제5항 단서</td><td>시행령 제8조의3</td><td>일정 규모 이하 지역금고 등은 선출방법 선택 가능</td></tr>
 <tr><td>후보자 1명</td><td>법 제18조 제7항</td><td>-</td><td>정관으로 따로 정하는 방법 가능</td></tr>
 <tr><td>당선 결정</td><td>법 제18조 제8항</td><td>-</td><td>선출 방식별 당선 기준 규정</td></tr>
@@ -2214,7 +2364,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="slide-top reveal" data-step="" data-step-level="0"><span class="part-badge">제3부</span><span class="slide-index"></span></div>
 <h1 class="slide-title wave-title" data-step="" data-step-level="0"><span class="w" style="--i:0">이</span><span class="w" style="--i:1">사</span><span class="w" style="--i:2">장</span><span class="w" style="--i:3">을</span><span class="w" style="--i:4"> </span><span class="w" style="--i:5">제</span><span class="w" style="--i:6">외</span><span class="w" style="--i:7">한</span><span class="w" style="--i:8"> </span><span class="w" style="--i:9">임</span><span class="w" style="--i:10">원</span><span class="w" style="--i:11">의</span><span class="w" style="--i:12"> </span><span class="w" style="--i:13">선</span><span class="w" style="--i:14">출</span></h1>
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
-<p class="reveal" data-step="" data-step-level="2">이사장을 제외한 임원은 총회에서 무기명 비밀투표로 선출한다.<br/>다수득표자 순으로 임원의 정수에 해당하는 사람을 선출하는 방식이 기본이다.</p>
+<p class="reveal" data-step="" data-step-level="2">이사장을 제외한 임원은 총회에서 무기명 비밀투표로 선출한다.<br/><mark class="quiz-key">다수득표자 순</mark>으로 임원의 정수에 해당하는 사람을 선출하는 방식이 기본이다.</p>
 <h3 class="subhead law-head reveal" data-step="" data-step-level="1">2. 요약</h3>
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>구분</th><th>법 조문</th><th>핵심 의미</th></tr></thead>
@@ -2238,7 +2388,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="slide-top reveal" data-step="" data-step-level="0"><span class="part-badge">제3부</span><span class="slide-index"></span></div>
 <h1 class="slide-title wave-title" data-step="" data-step-level="0"><span class="w" style="--i:0">임</span><span class="w" style="--i:1">원</span><span class="w" style="--i:2">의</span><span class="w" style="--i:3"> </span><span class="w" style="--i:4">결</span><span class="w" style="--i:5">격</span><span class="w" style="--i:6">사</span><span class="w" style="--i:7">유</span></h1>
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
-<p class="reveal" data-step="" data-step-level="2">임원은 금고 운영에 중대한 영향을 미치므로 결격사유가 엄격하게 규정되어 있다.<br/>미성년자, 피성년후견인, 파산선고 후 미복권자, 일정 범죄 전력자, 금융관계법령상 제재 이력자 등은 임원이 될 수 없다.</p>
+<p class="reveal" data-step="" data-step-level="2">임원은 금고 운영에 중대한 영향을 미치므로 결격사유가 엄격하게 규정되어 있다.<br/>미성년자, 피성년후견인, <mark class="quiz-key">파산선고 후 미복권자</mark>, 일정 범죄 전력자, 금융관계법령상 제재 이력자 등은 임원이 될 수 없다.</p>
 <h3 class="subhead law-head reveal" data-step="" data-step-level="1">2. 요약</h3>
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>구분</th><th>법</th><th>시행령</th><th>핵심 의미</th></tr></thead>
@@ -2273,7 +2423,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="slide-top reveal" data-step="" data-step-level="0"><span class="part-badge">제3부</span><span class="slide-index"></span></div>
 <h1 class="slide-title wave-title" data-step="" data-step-level="0"><span class="w" style="--i:0">임</span><span class="w" style="--i:1">원</span><span class="w" style="--i:2">의</span><span class="w" style="--i:3"> </span><span class="w" style="--i:4">임</span><span class="w" style="--i:5">기</span><span class="w" style="--i:6">와</span><span class="w" style="--i:7"> </span><span class="w" style="--i:8">연</span><span class="w" style="--i:9">임</span></h1>
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
-<p class="reveal" data-step="" data-step-level="2">임원의 임기는 직위별로 다르다.<br/>이사장과 이사의 임기는 4년, 감사의 임기는 3년이다.<br/>이사장은 2차에 한하여 연임할 수 있다.</p>
+<p class="reveal" data-step="" data-step-level="2">임원의 임기는 직위별로 다르다.<br/>이사장과 이사의 임기는 <mark class="quiz-key">4년</mark>, 감사의 임기는 <mark class="quiz-key">3년</mark>이다.<br/>이사장은 <mark class="quiz-key">2차에 한하여</mark> 연임할 수 있다.</p>
 <h3 class="subhead law-head reveal" data-step="" data-step-level="1">2. 요약</h3>
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>구분</th><th>법 조문</th><th>임기</th></tr></thead>
@@ -2297,7 +2447,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="slide-top reveal" data-step="" data-step-level="0"><span class="part-badge">제3부</span><span class="slide-index"></span></div>
 <h1 class="slide-title wave-title" data-step="" data-step-level="0"><span class="w" style="--i:0">임</span><span class="w" style="--i:1">원</span><span class="w" style="--i:2">의</span><span class="w" style="--i:3"> </span><span class="w" style="--i:4">해</span><span class="w" style="--i:5">임</span></h1>
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
-<p class="reveal" data-step="" data-step-level="2">임원은 총회의 의결로 해임된다.<br/>시행령은 임원 해임의결을 위해 재적회원 3분의 1 이상의 요구가 필요하다고 정한다.<br/>해당 임원에게는 해임 요구에 관한 사항을 알리고 변명할 기회를 주어야 한다.</p>
+<p class="reveal" data-step="" data-step-level="2">임원은 <mark class="quiz-key">총회의 의결</mark>로 해임된다.<br/>시행령은 임원 해임의결을 위해 <mark class="quiz-key">재적회원 3분의 1 이상</mark>의 요구가 필요하다고 정한다.<br/>해당 임원에게는 해임 요구에 관한 사항을 알리고 변명할 기회를 주어야 한다.</p>
 <h3 class="subhead law-head reveal" data-step="" data-step-level="1">2. 요약</h3>
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>구분</th><th>법</th><th>시행령</th><th>핵심 의미</th></tr></thead>
@@ -3014,7 +3164,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>구분</th><th>핵심 의미</th></tr></thead>
 <tbody>
-<tr><td>보호 목적</td><td>회원 재산 보호, 금고 건전한 육성</td></tr>
+<tr><td>보호 목적</td><td><mark class="quiz-key">회원 재산 보호</mark>, 금고 건전한 육성</td></tr>
 <tr><td>운영 주체</td><td>중앙회</td></tr>
 <tr><td>보호 대상</td><td>예탁금, 적금, 그 밖의 수입금, 중앙회 공제금 등</td></tr>
 <tr><td>법적 성격</td><td>법률상 의무적으로 성립하는 보호제도</td></tr>
@@ -3040,7 +3190,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <thead><tr><th>구분</th><th>법</th><th>시행령</th><th>핵심 의미</th></tr></thead>
 <tbody>
 <tr><td>준비금 설치</td><td>법 제71조 제1항</td><td>-</td><td>중앙회에 예금자보호준비금 설치</td></tr>
-<tr><td>가입 의무</td><td>법 제71조 제2항</td><td>-</td><td>금고 및 중앙회 의무 가입</td></tr>
+<tr><td>가입 의무</td><td>법 제71조 제2항</td><td>-</td><td>금고 및 중앙회 <mark class="quiz-key">의무 가입</mark></td></tr>
 <tr><td>그 밖의 수입금</td><td>법 제71조</td><td>시행령 제42조</td><td>금고의 별단예탁금</td></tr>
 <tr><td>보호 목적</td><td>법 제71조</td><td>-</td><td>환급 보장, 회원 재산 보호, 금고 건전성</td></tr>
 </tbody></table></div>
@@ -3065,7 +3215,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <thead><tr><th>구분</th><th>법</th><th>시행령</th><th>핵심 의미</th></tr></thead>
 <tbody>
 <tr><td>설치 근거</td><td>법 제71조 제3항</td><td>-</td><td>준비금 운용 중요 사항 심의·결정</td></tr>
-<tr><td>구성</td><td>-</td><td>시행령 제43조</td><td>위원장 포함 9명</td></tr>
+<tr><td>구성</td><td>-</td><td>시행령 제43조</td><td><mark class="quiz-key">위원장 포함 9명</mark></td></tr>
 <tr><td>위원장</td><td>-</td><td>시행령 제43조</td><td>중앙회 이사 중 회장이 지명</td></tr>
 <tr><td>위원</td><td>-</td><td>시행령 제43조</td><td>공무원, 외부전문가, 중앙회 이사, 금고 이사장 등</td></tr>
 </tbody></table></div>
@@ -3088,7 +3238,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>조성 재원</th><th>법 조문</th><th>핵심 의미</th></tr></thead>
 <tbody>
-<tr><td>금고·중앙회 출연금</td><td>법 제72조</td><td>공동 안전망 재원</td></tr>
+<tr><td>금고·중앙회 출연금</td><td>법 제72조</td><td><mark class="quiz-key">공동 안전망</mark> 재원</td></tr>
 <tr><td>타회계 전입금·차입금</td><td>법 제72조</td><td>필요시 재원 보강</td></tr>
 <tr><td>운용수익금</td><td>법 제72조</td><td>준비금 운용으로 발생한 수익</td></tr>
 <tr><td>그 밖의 수입금</td><td>법 제72조</td><td>법령상 인정되는 재원</td></tr>
@@ -3112,7 +3262,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>구분</th><th>법</th><th>시행령</th><th>핵심 의미</th></tr></thead>
 <tbody>
-<tr><td>대위변제</td><td>법 제71조 제4항</td><td>시행령 제46조</td><td>지급불능 시 대신 변제 가능</td></tr>
+<tr><td>대위변제</td><td>법 제71조 제4항</td><td>시행령 제46조</td><td>지급불능 시 <mark class="quiz-key">대신 변제</mark> 가능</td></tr>
 <tr><td>민법 준용</td><td>법 제71조 제5항</td><td>-</td><td>변제자대위 관련 규정 준용</td></tr>
 <tr><td>대위변제 범위</td><td>-</td><td>시행령 제46조</td><td>원금과 이자 등</td></tr>
 <tr><td>동일인 한도</td><td>-</td><td>시행령 제46조</td><td>시행령상 한도 적용</td></tr>
@@ -3136,7 +3286,7 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>감독 주체</th><th>주요 기능</th><th>신입직원 관점</th></tr></thead>
 <tbody>
-<tr><td>주무부장관</td><td>전반적 감독, 보고·자료 요구, 검사, 처분</td><td>정부 감독의 중심</td></tr>
+<tr><td><mark class="quiz-key">주무부장관</mark></td><td>전반적 감독, 보고·자료 요구, 검사, 처분</td><td>정부 감독의 중심</td></tr>
 <tr><td>시·도지사·시장·군수·구청장</td><td>설립인가·정관변경인가 등 일부 인가</td><td>금고 설립·정관 관련</td></tr>
 <tr><td>중앙회</td><td>금고 지도·감독, 검사, 경영평가</td><td>금고와 가장 밀접한 감독</td></tr>
 <tr><td>금고감독위원회</td><td>중앙회 내 금고 감독 기능</td><td>감독의 전문성·독립성 보완</td></tr>
@@ -3180,14 +3330,14 @@ body.print-mode .slide-top,body.print-mode .quiz-options,body.print-mode .gauge-
 <div class="slide-top reveal" data-step="" data-step-level="0"><span class="part-badge">제4부</span><span class="slide-index"></span></div>
 <h1 class="slide-title wave-title" data-step="" data-step-level="0"><span class="w" style="--i:0">경</span><span class="w" style="--i:1">영</span><span class="w" style="--i:2">공</span><span class="w" style="--i:3">시</span><span class="w" style="--i:4">와</span><span class="w" style="--i:5"> </span><span class="w" style="--i:6">경</span><span class="w" style="--i:7">영</span><span class="w" style="--i:8">건</span><span class="w" style="--i:9">전</span><span class="w" style="--i:10">성</span><span class="w" style="--i:11">기</span><span class="w" style="--i:12">준</span></h1>
 <div class="slide-content"><h3 class="subhead reveal" data-step="" data-step-level="1">1. 법해설</h3>
-<p class="reveal" data-step="" data-step-level="2">경영공시는 금고의 경영상태를 회원과 이해관계자에게 투명하게 알리는 제도다.<br/>경영건전성기준은 금고가 안정적으로 운영되기 위한 재무·리스크 관리 기준이다.</p>
+<p class="reveal" data-step="" data-step-level="2">경영공시는 금고의 경영상태를 회원과 이해관계자에게 투명하게 알리는 제도다.<br/><mark class="quiz-key">경영건전성기준</mark>은 금고가 안정적으로 운영되기 위한 재무·리스크 관리 기준이다.</p>
 <p class="reveal" data-step="" data-step-level="2">해설은 경영공시와 건전성 기준을 정부 지도·감독의 주요 수단으로 설명한다.</p>
 <h3 class="subhead law-head reveal" data-step="" data-step-level="1">2. 요약</h3>
 <div class="table-card reveal" data-step="" data-step-level="3"><table>
 <thead><tr><th>구분</th><th>법 조문</th><th>핵심 의미</th></tr></thead>
 <tbody>
 <tr><td>경영공시</td><td>법 제75조</td><td>금고 경영상태 공개</td></tr>
-<tr><td>경영건전성기준</td><td>법 제77조</td><td>건전한 운영을 위한 기준</td></tr>
+<tr><td><mark class="quiz-key">경영건전성기준</mark></td><td>법 제77조</td><td>건전한 운영을 위한 기준</td></tr>
 <tr><td>위반 시 문제</td><td>법 제85조 등</td><td>미공시·허위공시 시 벌칙 가능</td></tr>
 <tr><td>실무 연결</td><td>결산·감사·검사 자료</td><td>공시자료 정확성 확보</td></tr>
 </tbody></table></div>
